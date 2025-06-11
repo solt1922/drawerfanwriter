@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>推し絵師崇拝SNS</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+ body {
+      margin: 0;
+      font-family: "Segoe UI", sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      height: 100vh;
+    }
+    /* サイドメニュー */
+    .sidebar {
+      width: 180px;
+      background: #fff;
+      border-right: 1px solid #ddd;
+      padding-top: 20px;
+      box-sizing: border-box;
+    }
+    .sidebar h2 {
+      text-align: center;
+      color: #ff6b81;
+      margin-bottom: 20px;
+    }
+    .sidebar nav {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+      padding-left: 20px;
+    }
+    .sidebar nav a {
+      text-decoration: none;
+      color: #555;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .sidebar nav a:hover {
+      color: #ff6b81;
+    }
+
+    /* メインエリア */
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      max-width: 600px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 10px;
+      overflow-y: auto;
+    }
+    .header {
+      background: #ff6b81;
+      padding: 15px;
+      color: white;
+      font-size: 20px;
+      text-align: center;
+      border-radius: 10px 10px 0 0;
+      flex-shrink: 0;
+    }
+    .post-form {
+      padding: 10px 20px;
+      border-bottom: 1px solid #ddd;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .post-input {
+      flex: 1;
+      padding: 8px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .post-button {
+      background: #ff6b81;
+      border: none;
+      color: white;
+      padding: 8px 16px;
+      font-size: 14px;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .post-button:hover {
+      background: #e05a6c;
+    }
+
+    .timeline {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .post {
+      border-bottom: 1px solid #ddd;
+      padding: 10px 0;
+    }
+    .post:last-child {
+      border: none;
+    }
+    .post-header {
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    .post-content {
+      margin-bottom: 10px;
+      white-space: pre-wrap;
+    }
+    .post-actions {
+      display: flex;
+      gap: 15px;
+      font-size: 14px;
+      cursor: pointer;
+      color: #555;
+      align-items: center;
+      user-select: none;
+    }
+    .post-actions span:hover {
+      color: #000;
+    }
+    .like-button {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: #ff6b81;
+      font-weight: 600;
+    }
+    .like-button:hover {
+      color: #e05a6c;
+    }
+    .comment-box {
+      margin-top: 5px;
+    }
+    .comment-input {
+      width: 80%;
+      padding: 4px;
+      font-size: 14px;
+    }
+    .comment-send {
+      padding: 4px 8px;
+      font-size: 14px;
+      cursor: pointer;
+      background: #ff6b81;
+      border: none;
+      color: white;
+      border-radius: 3px;
+    }
+    .comment-send:hover {
+      background: #e05a6c;
+    }
+    .comment-list {
+      margin-top: 5px;
+      font-size: 14px;
+      padding-left: 10px;
+      color: #333;
+      max-height: 100px;
+      overflow-y: auto;
+    }
+
+    /* モーダル */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .modal-content {
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      text-align: center;
+      width: 90%;
+      max-width: 400px;
+    }
+    .modal-content input {
+      padding: 8px;
+      font-size: 16px;
+      width: 80%;
+      margin-bottom: 15px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+    .modal-content button {
+      padding: 8px 16px;
+      font-size: 16px;
+      background: #ff6b81;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .modal-content button:hover {
+      background: #e05a6c;
+    }
+    @media (max-width: 700px) {
+      body {
+        flex-direction: column;
+      }
+      .sidebar {
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid #ddd;
+        padding: 10px 0;
+      }
+      .main {
+        max-width: 100%;
+        border-radius: 0;
+      }
+    }
+
+
+  </style>
+</head>
+<body>
+  <div class="sidebar">
+    <h2>推し絵師SNS</h2>
+    <nav>
+      <a href="#" id="navHome">ホーム</a>
+      <a href="#" id="navNotification">通知</a>
+      <a href="#" id="navProfile">プロフィール</a>
+      <a href="#" id="navSettings">設定</a>
+    </nav>
+  </div>
+
+  <div class="main" id="main-content" style="display:none;">
+    <div class="header" id="header">推し絵師崇拝SNS</div>
+    <div class="post-form">
+      <input type="text" id="postInput" class="post-input" placeholder="投稿内容を入力..." maxlength="200" />
+      <button id="postButton" class="post-button">投稿</button>
+    </div>
+    <div class="timeline" id="timeline"></div>
+  </div>
+
+  <div class="modal" id="modal">
+    <div class="modal-content">
+      <h2>あなたの名前を入力してください</h2>
+      <input type="text" id="userNameInput" placeholder="例: 自分" />
+      <h2>推し絵師の名前を入力してください</h2>
+      <input type="text" id="artistNameInput" placeholder="例: さくら先生" />
+      <button id="startButton">開始</button>
+    </div>
+  </div>
+
+  <script>
+    const bannedWords = ["死ね", "殺す", "グロ", "差別", "通報", "ばか", "くそ", "しね", "無能", "ﾀﾋね", "クソ", "糞", "ゴミ", "阿保", "馬鹿", "バーカ"];
+
+    function containsBannedWord(text) {
+      return bannedWords.some(word => text.includes(word));
+    }
+
+    const modal = document.getElementById("modal");
+    const userNameInput = document.getElementById("userNameInput");
+    const artistNameInput = document.getElementById("artistNameInput");
+    const startButton = document.getElementById("startButton");
+    const postInput = document.getElementById("postInput");
+    const postButton = document.getElementById("postButton");
+    const timeline = document.getElementById("timeline");
+    const header = document.getElementById("header");
+    const mainContent = document.getElementById("main-content");
+
+    let userName = "";
+    let artistName = "";
+    let posts = [];
+
+    // 自動投稿用のサンプル投稿
+    const customPostsMap = {
+      "ソルト": [
+        "ロシフィンこそ嗜好！",
+        "人間の深読み、己の憎しみ",
+        "ピザって6っ回言って",
+        "pixivに投稿したぞてめえら！！！",
+        "多忙で干からびる",
+        "男尊女卑の女とツイフェミの男が付き合う物語を思いついた",
+        "医者や研究者ポジのキャラはええぞ～困ったときに最高のネタになる",
+        "魚は肺呼吸じゃないから肺呼吸にさせたら爬虫類になれそう"
+      ],
+      "ポチ太郎": [
+        "ソ連輪姦孕ませリョナ同人誌",
+        "四肢欠損っていいよね",
+        "てくてく様の絵が好きすぎる今日この頃",
+        "雄っぱい",
+        "勲章じゃらじゃらつけとるおっちゃん愛してる",
+        "おかえ輪姦！",
+        "ハグだけで済ませる訳ねぇだろこのエロ骨が脱げ",
+        "肌面積100より0のがエロい"
+      ],
+      "ジェリーフィッシュ田中": [
+        "ペンはいつでも反抗期",
+        "神絵師からフォロー貰いました嬉しすぎる川渡ってくる！！！",
+        "腰と脚えっちすぎるからとりあえず舐めてくる（殺されるまで3秒）",
+        "夏だ！短パンだ！脚だーーーーっ！！！！",
+        "マフラーはえっちな物です。なぜならマフラーの隙間から見える首がえっちだから",
+        "脚こそ至高なり"
+      ]
+    };
+
+    let autoPostInterval = null;
+
+function startAutoPosting(name) {
+  let postsArray = customPostsMap[name];
+  if (!postsArray) {
+    console.warn(`指定された名前の投稿リストがありません: ${name}`);
+    postsArray = [
+      "最高に色いい感じ！",
+      "今の絵すごい良い！",
+      "うーん線が難しい…",
+      "イベントたのしかった！！",
+      "なかなか難しい…",
+      "今日の投稿！"
+    ];
+  }
+  if (autoPostInterval) clearInterval(autoPostInterval);
+  autoPostInterval = setInterval(() => {
+    const randomIndex = Math.floor(Math.random() * postsArray.length);
+    const message = postsArray[randomIndex];
+    posts.unshift({
+      author: name,
+      content: message,
+      likes: 0,
+      comments: []
+    });
+    renderTimeline();
+  }, 30000);
+}
+        console.warn(`指定された名前の投稿リストがありません: ${name}`);
+        return;
+      }
+      if (autoPostInterval) clearInterval(autoPostInterval);
+      autoPostInterval = setInterval(() => {
+        const postsArray = customPostsMap[name];
+        const randomIndex = Math.floor(Math.random() * postsArray.length);
+        const message = postsArray[randomIndex];
+        posts.unshift({
+          author: name,
+          content: message,
+          likes: 0,
+          comments: []
+        });
+        renderTimeline();
+      }, 30000);
+    }
+
+    function renderTimeline() {
+      timeline.innerHTML = "";
+
+      if (posts.length === 0) {
+        timeline.innerHTML = `<p style="color:#999; text-align:center;">まだ投稿がありません。${artistName}への愛を語ろう！</p>`;
+        return;
+      }
+
+      posts.forEach((post, index) => {
+        const postElem = document.createElement("div");
+        postElem.classList.add("post");
+
+        const headerElem = document.createElement("div");
+        headerElem.classList.add("post-header");
+        headerElem.textContent = post.author;
+
+        const contentElem = document.createElement("div");
+        contentElem.classList.add("post-content");
+        contentElem.textContent = post.content;
+
+        const likeElem = document.createElement("span");
+        likeElem.classList.add("like-button");
+        likeElem.innerHTML = `❤️ <span>${post.likes}</span>`;
+        likeElem.title = "いいね";
+        likeElem.onclick = () => {
+          const buzzChance = 0.05;
+          if (Math.random() < buzzChance) {
+            const buzzLikes = Math.floor(100 + Math.random() * 100);
+            post.likes += buzzLikes;
+          } else {
+            post.likes++;
+          }
+          renderTimeline();
+        };
+
+        // コメント欄
+        const commentBox = document.createElement("div");
+        commentBox.classList.add("comment-box");
+
+        const commentInput = document.createElement("input");
+        commentInput.classList.add("comment-input");
+        commentInput.placeholder = "コメントを入力...";
+        commentInput.maxLength = 100;
+
+        const commentSend = document.createElement("button");
+        commentSend.classList.add("comment-send");
+        commentSend.textContent = "送信";
+        commentSend.onclick = () => {
+          const comment = commentInput.value.trim();
+          if (comment && !containsBannedWord(comment)) {
+            post.comments.push({ author: userName, text: comment });
+            commentInput.value = "";
+            renderTimeline();
+          } else {
+            alert("不適切な内容が含まれています。");
+          }
+        };
+
+        const commentList = document.createElement("div");
+        commentList.classList.add("comment-list");
+        post.comments.forEach(c => {
+          const commentElem = document.createElement("div");
+          commentElem.textContent = `${c.author}：${c.text}`;
+          commentList.appendChild(commentElem);
+        });
+
+        commentBox.appendChild(commentInput);
+        commentBox.appendChild(commentSend);
+        commentBox.appendChild(commentList);
+
+        const actions = document.createElement("div");
+        actions.classList.add("post-actions");
+        actions.appendChild(likeElem);
+
+        postElem.appendChild(headerElem);
+        postElem.appendChild(contentElem);
+        postElem.appendChild(actions);
+        postElem.appendChild(commentBox);
+
+        timeline.appendChild(postElem);
+      });
+    }
+
+    // 投稿ボタン
+postButton.addEventListener("click", () => {
+  const content = postInput.value.trim();
+  if (!content) return;
+
+  if (containsBannedWord(content)) {
+    alert("不適切な表現が含まれています。内容を修正してください。");
+    return;
+  }
+
+  posts.unshift({
+    author: userName,
+    content: content,
+    likes: 0,
+    comments: []
+  });
+
+  postInput.value = "";
+  renderTimeline();
+});
+    
+// スタートボタン
+startButton.addEventListener("click", () => {
+  userName = userNameInput.value.trim();
+  artistName = artistNameInput.value.trim();
+
+  if (!userName || !artistName) {
+    alert("名前を両方入力してください。");
+    return;
+  }
+
+  header.textContent = `${artistName}を崇拝する${userName}のSNS`;
+  modal.style.display = "none";
+  mainContent.style.display = "flex";
+
+  startAutoPosting(artistName);
+});
+</script>
+</body>
+</html>
