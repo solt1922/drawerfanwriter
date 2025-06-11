@@ -271,32 +271,14 @@
     const customPostsMap = {
       "ソルト": [
         "ロシフィンこそ嗜好！",
-        "人間の深読み、己の憎しみ",
-        "ピザって6っ回言って",
-        "pixivに投稿したぞてめえら！！！",
-        "多忙で干からびる",
-        "男尊女卑の女とツイフェミの男が付き合う物語を思いついた",
-        "医者や研究者ポジのキャラはええぞ～困ったときに最高のネタになる",
-        "魚は肺呼吸じゃないから肺呼吸にさせたら爬虫類になれそう"
+        "人間の深読み、己の憎しみ","ピザって6っ回言って","pixivに投稿したぞてめえら！！！","多忙で干からびる","男尊女卑の女とツイフェミの男が付き合う物語を思いついた","医者や研究者ポジのキャラはええぞ～困ったときに最高のネタになる","魚は肺呼吸じゃないから肺呼吸にさせたら爬虫類になれそう",
       ],
       "ポチ太郎": [
-        "ソ連輪姦孕ませリョナ同人誌",
-        "四肢欠損っていいよね",
-        "てくてく様の絵が好きすぎる今日この頃",
-        "雄っぱい",
-        "勲章じゃらじゃらつけとるおっちゃん愛してる",
-        "おかえ輪姦！",
-        "ハグだけで済ませる訳ねぇだろこのエロ骨が脱げ",
-        "肌面積100より0のがエロい"
+        "ソ連輪姦孕ませリョナ同人誌","四肢欠損っていいよね","てくてく様の絵が好きすぎる今日この頃","雄っぱい","勲章じゃらじゃらつけとるおっちゃん愛してる", "おかえ輪姦！","ハグだけで済ませる訳ねぇだろこのエロ骨が脱げ","肌面積100より0のがエロい",
       ],
       "ジェリーフィッシュ田中": [
-        "ペンはいつでも反抗期",
-        "神絵師からフォロー貰いました嬉しすぎる川渡ってくる！！！",
-        "腰と脚えっちすぎるからとりあえず舐めてくる（殺されるまで3秒）",
-        "夏だ！短パンだ！脚だーーーーっ！！！！",
-        "マフラーはえっちな物です。なぜならマフラーの隙間から見える首がえっちだから",
-        "脚こそ至高なり"
-      ]
+        "ペンはいつでも反抗期","神絵師からフォロー貰いました嬉しすぎる川渡ってくる！！！", "腰と脚えっちすぎるからとりあえず舐めてくる（殺されるまで3秒）", "夏だ！短パンだ！脚だーーーーっ！！！！", "マフラーはえっちな物です。なぜならマフラーの隙間から見える首がえっちだから","脚こそ至高なり",
+      ],
     };
 
     let autoPostInterval = null;
@@ -314,7 +296,9 @@ function startAutoPosting(name) {
       "今日の投稿！"
     ];
   }
+
   if (autoPostInterval) clearInterval(autoPostInterval);
+
   autoPostInterval = setInterval(() => {
     const randomIndex = Math.floor(Math.random() * postsArray.length);
     const message = postsArray[randomIndex];
@@ -326,7 +310,7 @@ function startAutoPosting(name) {
     });
     renderTimeline();
   }, 30000);
-}
+  }
         console.warn(`指定された名前の投稿リストがありません: ${name}`);
         return;
       }
@@ -343,7 +327,7 @@ function startAutoPosting(name) {
         });
         renderTimeline();
       }, 30000);
-    }
+   }
 
     function renderTimeline() {
       timeline.innerHTML = "";
@@ -450,21 +434,24 @@ postButton.addEventListener("click", () => {
 });
     
 // スタートボタン
-startButton.addEventListener("click", () => {
-  userName = userNameInput.value.trim();
-  artistName = artistNameInput.value.trim();
-
-  if (!userName || !artistName) {
-    alert("名前を両方入力してください。");
+  startButton.onclick = () => {
+  const user = userNameInput.value.trim();
+  const artist = artistNameInput.value.trim();
+  if (!user || !artist) {
+    alert("両方の名前を入力してください！");
     return;
   }
 
-  header.textContent = `${artistName}を崇拝する${userName}のSNS`;
+  userName = user;
+  artistName = artist;
+
   modal.style.display = "none";
   mainContent.style.display = "flex";
+  header.textContent = `${artistName} 崇拝SNS`;
 
   startAutoPosting(artistName);
-});
+  renderTimeline();
+};
 </script>
 </body>
 </html>
