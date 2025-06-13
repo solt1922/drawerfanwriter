@@ -222,7 +222,7 @@
     <nav>
       <a href="#" id="navHome">ホーム</a>
       <a href="#" id="navNotification">通知</a>
-      <a href="#" id="navSapo">サポーターと話す</a>
+      <a href="https://github.com/solt1922/drawerfanwriter/blob/ab18b5a20b3baa396c825695e3e2a35ad68f61c6/sappo.html" id="navSapo">サポーターと話す</a>
       <a href="#" id="navSettings">設定</a>
     </nav>
   </div>
@@ -440,7 +440,7 @@ startButton.addEventListener("click", () => {
   }
   artistName = name;
   userName = user;
-  header.textContent = `${artistName}崇拝SNS`;
+  header.textContent = `${artistName}推しバズSNS`;
   modal.style.display = "none";
   mainContent.style.display = "flex";
   startAutoPosting(artistName);
