@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <title>🛐 推し絵師サポート窓口</title>
+  <style>
+    /* ここはあなたのスタイルのまま */
+    #chat-container {
+      width: 90%;
+      max-width: 600px;
+      margin: 20px auto;
+      background: #fffaf0;
+      border-radius: 1rem;
+      padding: 1rem;
+      box-shadow: 0 0 10px #ddd;
+      font-family: "Courier New", monospace;
+    }
+    #chat-log {
+      height: 300px;
+      overflow-y: auto;
+      padding: 0.5rem;
+      background: #fefefe;
+      border: 1px solid #ccc;
+      margin-bottom: 1rem;
+      border-radius: 0.5rem;
+    }
+    #chat-input-area {
+      display: flex;
+      gap: 0.5rem;
+    }
+    #user-input {
+      flex: 1;
+      padding: 0.5rem;
+      border-radius: 0.5rem;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #eee;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🛐 推し絵師サポート窓口</h1>
+    <p>困ったことがあれば、サポート担当の夕介佐歩くんに話しかけてみましょう。</p>
+  </header>
+
+  <div id="chat-container">
+    <div id="chat-log"></div>
+    <div id="chat-input-area">
+      <input type="text" id="user-input" placeholder="ご相談ください…" />
+      <button id="send-btn">送信</button>
+    </div>
+  </div>
+
+  <script>
+    const userId = "user123"; // 実際はログインユーザーIDなどを使う想定
+
+    const chatLog = document.getElementById("chat-log");
+    const input = document.getElementById("user-input");
+    const sendBtn = document.getElementById("send-btn");
+
+    function appendMessage(sender, text) {
+      const div = document.createElement("div");
+      div.innerHTML = `<strong>${sender}:</strong> ${text}`;
+      chatLog.appendChild(div);
+      chatLog.scrollTop = chatLog.scrollHeight;
+    }
+
+    async function sendMessage() {
+      const message = input.value.trim();
+      if (!message) return;
+      appendMessage("🧍‍♀️あなた", message);
+      input.value = "";
+      sendBtn.disabled = true;
+
+      try {
+        const res = await fetch("/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userId, message }),
+        });
+        const data = await res.json();
+        if (data.reply) {
+          appendMessage("🧑‍💼夕介佐歩", data.reply);
+        } else {
+          appendMessage("🧑‍💼夕介佐歩", "申し訳ありませんが応答が得られませんでした。");
+        }
+      } catch (e) {
+        appendMessage("🧑‍💼夕介佐歩", "通信エラーが発生しました。");
+      } finally {
+        sendBtn.disabled = false;
+      }
+    }
+
+    sendBtn.addEventListener("click", sendMessage);
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") sendMessage();
+    });
+  </script>
+</body>
+</html>
