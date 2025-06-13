@@ -222,7 +222,7 @@
     <nav>
       <a href="#" id="navHome">ホーム</a>
       <a href="#" id="navNotification">通知</a>
-      <a href="#" id="navProfile">プロフィール</a>
+      <a href="#" id="navSapo">サポーターと話す</a>
       <a href="#" id="navSettings">設定</a>
     </nav>
   </div>
@@ -236,15 +236,15 @@
     <div class="timeline" id="timeline"></div>
   </div>
 
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <h2>あなたの名前を入力してください</h2>
-      <input type="text" id="userNameInput" placeholder="例: 自分" />
-      <h2>推し絵師の名前を入力してください</h2>
-      <input type="text" id="artistNameInput" placeholder="例: さくら先生" />
-      <button id="startButton">開始</button>
-    </div>
+<!-- モーダル部分を修正 -->
+<div id="modal" class="modal">
+  <div class="modal-content">
+    <h2>推し絵師の名前とあなたの名前を入力してください</h2>
+    <input type="text" id="userNameInput" placeholder="あなたの名前を入力" />
+    <input type="text" id="artistNameInput" placeholder="例: さくら先生" />
+    <button id="startButton">開始</button>
   </div>
+</div>
 
   <script>
     const bannedWords = ["死ね", "殺す", "グロ", "差別", "通報", "ばか", "くそ", "しね", "無能", "ﾀﾋね", "クソ", "糞", "ゴミ", "阿保", "馬鹿", "バーカ"];
@@ -253,7 +253,7 @@
       return bannedWords.some(word => text.includes(word));
     }
 
-    const modal = document.getElementById("modal");
+   const modal = document.getElementById("modal");
     const userNameInput = document.getElementById("userNameInput");
     const artistNameInput = document.getElementById("artistNameInput");
     const startButton = document.getElementById("startButton");
@@ -282,23 +282,35 @@
     };
 
     let autoPostInterval = null;
+startButton.addEventListener("click", () => {
+  const name = artistNameInput.value.trim();
+  const user = userNameInput.value.trim();
+  if (name === "") {
+    alert("推し絵師の名前を入力してください。");
+    return;
+  }
+  if (user === "") {
+    alert("あなたの名前を入力してください。");
+    return;
+  }
+  artistName = name;
+  userName = user;
+  header.textContent = `${artistName}崇拝SNS`;
+  modal.style.display = "none";
+  mainContent.style.display = "flex";
+  startAutoPosting(artistName);
+});
 
 function startAutoPosting(name) {
-  let postsArray = customPostsMap[name];
-  if (!postsArray) {
-    console.warn(`指定された名前の投稿リストがありません: ${name}`);
-    postsArray = [
-      "最高に色いい感じ！",
-      "今の絵すごい良い！",
-      "うーん線が難しい…",
-      "イベントたのしかった！！",
-      "なかなか難しい…",
-      "今日の投稿！"
-    ];
-  }
-
   if (autoPostInterval) clearInterval(autoPostInterval);
-
+  const postsArray = customPostsMap[name] || [
+    "最高に色いい感じ！",
+    "今の絵すごい良い！",
+    "うーん線が難しい…",
+    "イベントたのしかった！！",
+    "なかなか難しい…",
+    "今日の投稿！"
+  ];
   autoPostInterval = setInterval(() => {
     const randomIndex = Math.floor(Math.random() * postsArray.length);
     const message = postsArray[randomIndex];
@@ -310,30 +322,14 @@ function startAutoPosting(name) {
     });
     renderTimeline();
   }, 30000);
-  }
-        console.warn(`指定された名前の投稿リストがありません: ${name}`);
-        return;
-      }
-      if (autoPostInterval) clearInterval(autoPostInterval);
-      autoPostInterval = setInterval(() => {
-        const postsArray = customPostsMap[name];
-        const randomIndex = Math.floor(Math.random() * postsArray.length);
-        const message = postsArray[randomIndex];
-        posts.unshift({
-          author: name,
-          content: message,
-          likes: 0,
-          comments: []
-        });
-        renderTimeline();
-      }, 30000);
-   }
+}
 
     function renderTimeline() {
       timeline.innerHTML = "";
 
       if (posts.length === 0) {
-        timeline.innerHTML = `<p style="color:#999; text-align:center;">まだ投稿がありません。${artistName}への愛を語ろう！</p>`;
+       timeline.innerHTML = `<p style="color:#999; text-align:center;">まだ投稿がありません。${artistName}への愛を語ろう！</p>`;
+
         return;
       }
 
@@ -389,11 +385,11 @@ function startAutoPosting(name) {
 
         const commentList = document.createElement("div");
         commentList.classList.add("comment-list");
-        post.comments.forEach(c => {
-          const commentElem = document.createElement("div");
-          commentElem.textContent = `${c.author}：${c.text}`;
-          commentList.appendChild(commentElem);
-        });
+post.comments.forEach(c => {
+  const commentElem = document.createElement("div");
+  commentElem.textContent = `${c.author}：${c.text}`;
+  commentList.appendChild(commentElem);
+});
 
         commentBox.appendChild(commentInput);
         commentBox.appendChild(commentSend);
@@ -415,43 +411,40 @@ function startAutoPosting(name) {
     // 投稿ボタン
 postButton.addEventListener("click", () => {
   const content = postInput.value.trim();
-  if (!content) return;
-
+  if (content === "") return;
   if (containsBannedWord(content)) {
-    alert("不適切な表現が含まれています。内容を修正してください。");
+    alert("不適切な言葉が含まれています。内容を修正してください。");
     return;
   }
-
   posts.unshift({
     author: userName,
-    content: content,
+    content,
     likes: 0,
     comments: []
   });
-
   postInput.value = "";
   renderTimeline();
 });
-    
 // スタートボタン
-  startButton.onclick = () => {
+
+startButton.addEventListener("click", () => {
+  const name = artistNameInput.value.trim();
   const user = userNameInput.value.trim();
-  const artist = artistNameInput.value.trim();
-  if (!user || !artist) {
-    alert("両方の名前を入力してください！");
+  if (name === "") {
+    alert("推し絵師の名前を入力してください。");
     return;
   }
-
+  if (user === "") {
+    alert("あなたの名前を入力してください。");
+    return;
+  }
+  artistName = name;
   userName = user;
-  artistName = artist;
-
+  header.textContent = `${artistName}崇拝SNS`;
   modal.style.display = "none";
   mainContent.style.display = "flex";
-  header.textContent = `${artistName} 崇拝SNS`;
-
   startAutoPosting(artistName);
-  renderTimeline();
-};
+});
 </script>
 </body>
 </html>
